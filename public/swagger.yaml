@@ -1,0 +1,128 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Swagger Tasks
+basePath: /api
+schemes:
+  - http
+paths:
+  "/tasks":
+    get:
+      summary: Finds Tasks
+      operationId: findTasks
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Task"
+    post:
+      summary: Add a new task to the store
+      description: ""
+      operationId: addTask
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Task object that needs to be added to the store
+          required: false
+          schema:
+            $ref: "#/definitions/TaskCreation"
+      responses:
+        "201":
+          description: Task created
+  "/tasks/{id}":
+    get:
+      summary: Find task by ID
+      description: Returns a single task
+      operationId: getTaskById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of task to return
+          required: true
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/Task"
+        "404":
+          description: Task not found
+    delete:
+      summary: Delete a Task by id
+      description: Return a 204 when task is deleted
+      operationId: deleteTaskById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of task to delete
+          required: true
+          type: string
+          format: void
+    patch:
+      summary: Updates a task in the store with form data
+      description: ""
+      operationId: updateTaskWithForm
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of task that needs to be updated
+          required: true
+          type: string
+          format: uuid
+        - in: body
+          name: body
+          description: Task object that needs to be added to the store
+          required: false
+          schema:
+            $ref: "#/definitions/TaskUpdate"
+      responses:
+        "200":
+          description: Task updated
+definitions:
+  Task:
+    properties:
+      id:
+        type: string
+        format: uuid
+        exemple: "e9e21be7-ad10-480b-b6c8-1865a512f676"
+      description:
+        type: string
+        example: "Buy some waffles"
+      updatedAt:
+        type: string
+        format: date
+      priority:
+        type: number
+        format: integer
+        exemple: 1
+      done:
+        type: boolean
+        exemple: false
+  TaskCreation:
+    required:
+      - description
+    properties:
+      description:
+        type: string;
+        exemple: "Do the meel tonight"
+  TaskUpdate:
+    properties:
+      description:
+        type: string
+        exemple: "clean the house"
+      done:
+        type: boolean
+        exemple: false
