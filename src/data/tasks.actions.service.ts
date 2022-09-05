@@ -43,7 +43,7 @@ export class TasksActionsService {
    */
   findTasks = async (): Promise<Array<Task>> => {
     const result = await sql.query`select * from [TodoAppDatabase].[dbo].[Tasks]`;
-    return result && result.recordset && result.recordset.length > 0 && result.recordset;
+    return result && result.recordset && result.recordset.length > 0 ? result.recordset : [];
   };
 
   /**

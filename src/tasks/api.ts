@@ -21,9 +21,13 @@ const findTaskById = async (request: Request, response: Response) => {
     await tasksActionsService.init();
     // make sure that any items are correctly URL encoded in the connection string
     const task = await tasksActionsService.findTask(id);
-    return response.status(200).send(task);
+    if (task) {
+      return response.status(200).send(task);
+    } else {
+      return response.status(404).send({ status: 404, message: 'NOT_FOUND' });
+    }
   } catch ({ message }) {
-    return response.status(500).send({ status: 404, message });
+    return response.status(500).send({ status: 500, message });
   }
 };
 

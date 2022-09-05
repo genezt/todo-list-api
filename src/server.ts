@@ -8,7 +8,7 @@ import TasksApi from './tasks/api';
 /** Initialize Epress server **/
 
 const SERVER: Express = express();
-const PORT = 9000;
+const PORT = Number(process.env.PORT) || 9000;
 
 SERVER.use(express.json());
 SERVER.use((request, response, next) => {
@@ -34,7 +34,7 @@ const swaggerFile = readFileSync(resolve(__dirname, '../', 'public', 'swagger.ya
 const swaggerDocument = parse(swaggerFile);
 SERVER.use('/', serve, setup(swaggerDocument));
 
-SERVER.listen(PORT, () => {
+SERVER.listen(PORT, '0.0.0.0', () => {
   console.log(`⚡️[SERVER]: Server is running at http://localhost:${PORT}`);
   console.log(`⚡️[SERVER]: Rest endpoint is available: http://localhost:${PORT}/api`);
 });
