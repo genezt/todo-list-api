@@ -4,11 +4,13 @@ import { resolve } from 'path';
 import { serve, setup } from 'swagger-ui-express';
 import { parse } from 'yaml';
 import TasksApi from './tasks/api';
+import { TasksActionsService } from './data/tasks.actions.service';
 
 /** Initialize Epress server **/
 
 const SERVER: Express = express();
 const PORT = Number(process.env.PORT) || 9000;
+export const tasksActionsService = new TasksActionsService();
 
 SERVER.use(express.json());
 SERVER.use((request, response, next) => {
@@ -24,7 +26,7 @@ SERVER.use((request, response, next) => {
 
 /** Initialize api **/
 
-TasksApi.forEach((route: any) => {
+TasksApi.forEach(async (route: any) => {
   SERVER[route.method](route.path, route.handler);
 });
 
@@ -34,7 +36,8 @@ const swaggerFile = readFileSync(resolve(__dirname, '../', 'public', 'swagger.ya
 const swaggerDocument = parse(swaggerFile);
 SERVER.use('/', serve, setup(swaggerDocument));
 
-SERVER.listen(PORT, '0.0.0.0', () => {
+SERVER.listen(PORT, '0.0.0.0', async () => {
+  await tasksActionsService.init();
   console.log(`⚡️[SERVER]: Server is running at http://localhost:${PORT}`);
   console.log(`⚡️[SERVER]: Rest endpoint is available: http://localhost:${PORT}/api`);
 });

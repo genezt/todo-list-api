@@ -13,7 +13,6 @@ const sql = require('mssql');
 const sqlConfig = {
   user: process.env.SQL_USER,
   password: process.env.SQL_PASSWORD,
-  database: process.env.SQL_DATABASE,
   server: process.env.SQL_SERVER,
   port: Number(process.env.SQL_PORT),
   pool: {
@@ -35,6 +34,24 @@ export class TasksActionsService {
   async init() {
     await sql.connect(sqlConfig);
     this.pool = await sql.connect(sqlConfig);
+
+    const results = await this.pool.request().query('SELECT name FROM SYS.DATABASES');
+
+    if (
+      results &&
+      results.recordset.length > 0 &&
+      results.recordset.filter((database) => database.name === process.env.SQL_DATABASE).length > 0
+    ) {
+      console.log('TodoAppDatabase database found');
+    } else {
+      console.log('TodoAppDatabase database not exciting');
+      await this.pool.request().query('CREATE DATABASE TodoAppDatabase');
+      await this.pool
+        .request()
+        .query(
+          'CREATE TABLE TodoAppDatabase.dbo.Tasks (taskId INT PRIMARY KEY IDENTITY (1, 1),title VARCHAR (50) NOT NULL,description VARCHAR (50) NOT NULL,done BIT default 0 NOT NULL,createdDate DATETIME default GETDATE() NOT NULL,updatedAt DATETIME default GETDATE() NOT NULL,);',
+        );
+    }
   }
 
   /**
@@ -81,7 +98,7 @@ export class TasksActionsService {
       .request()
       .input('title', sql.VarChar(50), body.title)
       .input('description', sql.VarChar(50), body.description)
-      .query('INSERT INTO [dbo].[Tasks] (title, description) values (@title, @description)');
+      .query('INSERT INTO [TodoAppDatabase].[dbo].[Tasks] (title, description) values (@title, @description)');
     return result.rowsAffected && result.rowsAffected.length === 1;
   };
 
