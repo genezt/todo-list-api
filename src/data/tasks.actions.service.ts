@@ -84,7 +84,7 @@ export class TasksActionsService {
       .request()
       .input('id', sql.Int, id)
       .input('title', sql.VarChar(50), body.title)
-      .query('UPDATE [dbo].[Tasks] SET [title] = @title WHERE taskId = @id');
+      .query('UPDATE [TodoAppDatabase].[dbo].[Tasks] SET [title] = @title WHERE taskId = @id');
     return result.rowsAffected && result.rowsAffected.length === 1;
   };
 
